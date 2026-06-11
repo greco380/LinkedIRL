@@ -13,6 +13,9 @@ struct MessagesView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
+                    AdBannerView()
+                        .padding(.horizontal, 22)
+
                     AccountHero()
                         .padding(.horizontal, 22)
 

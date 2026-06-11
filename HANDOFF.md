@@ -12,6 +12,8 @@ This document is the single onboarding page for any agent picking up this projec
 - `LinkedInOAuthConfiguration.load()` now rejects `#######` Info.plist placeholders (previously only `REPLACE_WITH`), so an unconfigured LinkedIn client id surfaces a clear error instead of a broken OAuth page.
 - `AppStore.connection(withID:)` now resolves live presences too, so incoming-message notifications and recent-chat rows show real peer names instead of "LinkedIn connection".
 - **Real-export validation:** Josh's actual `Connections.csv` (786 rows, UTF-8, "Notes:" preamble, diacritics, quoted commas) was run through a faithful port of the Swift parser: 776 connections import cleanly; the 6 skipped rows are anonymized members with no name/URL (correct); 0 date-parse failures.
+- **Backend deployed live (2026-06-11):** migrations 0002→0007 applied via MCP (only 0001 had ever been applied); both Edge Functions deployed with `verify_jwt=false`; `/version` + `/health` smoke tests pass. Still manual: LinkedIn secrets in dashboard, `app.apns_function_url` GUC (MCP role lacks ALTER DATABASE permission).
+- **Venue map replaced (2026-06-11):** `VenueMapView`'s synthetic 3×3 hall grid swapped for `ConferenceFloorPlanView` (same file, `DiscoverView.swift` — deliberately NOT a new file to avoid pbxproj edits): a vector recreation of Josh's real conference expo floor plan (5 diagonal-split topic zones, ~35 booth blocks, networking bars / launch pad / cafe / registration / entrance) on a normalized [0,1] grid so connection pins (mapX/mapY) overlay unchanged. Booth numbers intentionally omitted (unreadable at phone scale). Per-event floor plans are a future enhancement — every event currently shows this one layout.
 
 ## What was completed in session 4 (2026-06-09 — v1 push)
 

@@ -39,6 +39,98 @@ struct AvatarView: View {
     }
 }
 
+/// Sponsored banner slot. Currently renders rotating house creatives; when a
+/// real ad SDK (AdMob, etc.) is added, swap the body for the SDK's banner view
+/// and every placement updates at once. Height is fixed so screen layouts
+/// don't shift when the creative changes.
+struct AdBannerView: View {
+    @Environment(\.linkupTheme) private var theme
+    @Environment(\.openURL) private var openURL
+
+    private struct Creative {
+        let title: String
+        let subtitle: String
+        let systemImage: String
+        let colorHex: UInt
+        let url: URL
+    }
+
+    private static let creatives: [Creative] = [
+        Creative(
+            title: "Linkup Pro",
+            subtitle: "See who viewed you at every event",
+            systemImage: "sparkles",
+            colorHex: 0x6C5CE7,
+            url: URL(string: "https://linkup.app/pro")!
+        ),
+        Creative(
+            title: "Print your event badge",
+            subtitle: "Fast on-site badge printing for teams",
+            systemImage: "lanyardcard.fill",
+            colorHex: 0x1F8A70,
+            url: URL(string: "https://linkup.app/partners")!
+        ),
+        Creative(
+            title: "Host on Linkup",
+            subtitle: "Bring live networking to your conference",
+            systemImage: "megaphone.fill",
+            colorHex: 0xE0A800,
+            url: URL(string: "https://linkup.app/hosts")!
+        ),
+    ]
+
+    @State private var creative = AdBannerView.creatives.randomElement()!
+
+    var body: some View {
+        Button {
+            openURL(creative.url)
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: creative.systemImage)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 34, height: 34)
+                    .background(Color(hex: creative.colorHex), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(creative.title)
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(theme.textPrimary)
+                    Text(creative.subtitle)
+                        .font(.caption2)
+                        .foregroundStyle(theme.textSecondary)
+                        .lineLimit(1)
+                }
+
+                Spacer(minLength: 8)
+
+                Text("Ad")
+                    .font(.system(size: 9, weight: .heavy))
+                    .foregroundStyle(theme.textTertiary)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            .stroke(theme.textQuaternary, lineWidth: 1)
+                    }
+
+                Image(systemName: "chevron.right")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(theme.textQuaternary)
+            }
+            .padding(.horizontal, 12)
+            .frame(height: 54)
+            .background(theme.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(theme.border, lineWidth: 1)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Advertisement: \(creative.title). \(creative.subtitle)")
+    }
+}
+
 struct PrimaryButton: View {
     @Environment(\.linkupTheme) private var theme
     var title: String
