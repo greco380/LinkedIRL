@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!--
+        Sign in with Apple — required by App Store policy because Linkup
+        offers third-party sign-in (Google, LinkedIn). [Default] is the
+        normal value for the consumer-facing Apple ID entitlement.
+    -->
+    <key>com.apple.developer.applesignin</key>
+    <array>
+        <string>Default</string>
+    </array>
+    <!--
+        APNs environment.
+        - development: used for Xcode debug builds + TestFlight internal builds.
+        - production: required for App Store / external TestFlight builds.
+        Josh: flip this to "production" on the App Store release build.
+    -->
+    <key>aps-environment</key>
+    <string>development</string>
+</dict>
+</plist>

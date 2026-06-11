@@ -1,0 +1,3213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linkup — iOS Prototype</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(circle at 30% 0%, #2a1810 0%, #0f0a08 60%, #050302 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+
+  /* ============ THEME TOKENS ============ */
+  .device-screen {
+    --bg: #FFFBF6;
+    --bg-secondary: #F5EFE7;
+    --bg-tertiary: #ECE4D6;
+    --surface: #FFFFFF;
+    --surface-elevated: rgba(255, 251, 246, 0.92);
+    --tab-bar-bg: rgba(255, 251, 246, 0.92);
+
+    --text-primary: #0F1726;
+    --text-secondary: #64748B;
+    --text-tertiary: #94A3B8;
+    --text-quaternary: #C9C2B5;
+
+    --border: rgba(0, 0, 0, 0.08);
+    --border-strong: rgba(0, 0, 0, 0.12);
+    --row-divider: rgba(0, 0, 0, 0.06);
+    --hit-bg: rgba(15, 23, 38, 0.06);
+
+    --primary: #FF5E3A;
+    --primary-grad-end: #FF8B5C;
+    --primary-light: #FFF1EA;
+    --primary-dark: #C03A1A;
+    --primary-shadow: rgba(255, 94, 58, 0.25);
+    --primary-shadow-strong: rgba(255, 94, 58, 0.3);
+
+    --map-bg-1: #F2EAE0;
+    --map-bg-2: #EDE3D3;
+    --map-booth: #E8DCC9;
+    --map-booth-alt: #DDD0BC;
+    --map-hall: #FAF5EE;
+    --map-detail: #C5B496;
+    --map-label: #8B6E4A;
+
+    --you-pin: #0066FF;
+    --you-pin-glow-1: rgba(0, 102, 255, 0.15);
+    --you-pin-glow-0: rgba(0, 102, 255, 0);
+
+    --home-indicator: #0F1726;
+    --modal-backdrop: rgba(0, 0, 0, 0.4);
+    --toast-bg: rgba(15, 23, 38, 0.92);
+    --toast-text: #fff;
+    --chat-bubble-them: #F5EFE7;
+    --chat-banner-bg: #FFF1EA;
+    --slate-action: #94A3B8;
+    --mute-action: #94A3B8;
+
+    --apple-btn: #000;
+    --apple-text: #fff;
+    --google-btn: #fff;
+    --google-text: #0F1726;
+    --google-border: rgba(0, 0, 0, 0.12);
+    --linkedin-btn: #0A66C2;
+    --linkedin-text: #fff;
+
+    --logo-bg: linear-gradient(135deg, #FF5E3A 0%, #FF8B5C 100%);
+  }
+  .device-screen[data-theme="dark"] {
+    --bg: #0F1419;
+    --bg-secondary: #1A2230;
+    --bg-tertiary: #243349;
+    --surface: #1E293B;
+    --surface-elevated: rgba(15, 20, 25, 0.92);
+    --tab-bar-bg: rgba(15, 20, 25, 0.92);
+
+    --text-primary: #F1F5F9;
+    --text-secondary: #94A3B8;
+    --text-tertiary: #64748B;
+    --text-quaternary: #475569;
+
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.14);
+    --row-divider: rgba(255, 255, 255, 0.06);
+    --hit-bg: rgba(241, 245, 249, 0.08);
+
+    --primary: #FF7050;
+    --primary-grad-end: #FF9C76;
+    --primary-light: #2E1814;
+    --primary-dark: #FFB69E;
+    --primary-shadow: rgba(255, 112, 80, 0.3);
+    --primary-shadow-strong: rgba(255, 112, 80, 0.4);
+
+    --map-bg-1: #1A2230;
+    --map-bg-2: #20293A;
+    --map-booth: #2A364D;
+    --map-booth-alt: #344158;
+    --map-hall: #1F2937;
+    --map-detail: #4B5A75;
+    --map-label: #8B97AC;
+
+    --you-pin: #4D9FFF;
+    --you-pin-glow-1: rgba(77, 159, 255, 0.22);
+    --you-pin-glow-0: rgba(77, 159, 255, 0);
+
+    --home-indicator: #F1F5F9;
+    --modal-backdrop: rgba(0, 0, 0, 0.6);
+    --toast-bg: rgba(241, 245, 249, 0.95);
+    --toast-text: #0F1419;
+    --chat-bubble-them: #2A364D;
+    --chat-banner-bg: #2E1814;
+    --slate-action: #475569;
+    --mute-action: #475569;
+
+    --apple-btn: #F1F5F9;
+    --apple-text: #0F1419;
+    --google-btn: #1E293B;
+    --google-text: #F1F5F9;
+    --google-border: rgba(255, 255, 255, 0.14);
+    --linkedin-btn: #1E76D6;
+    --linkedin-text: #fff;
+
+    --logo-bg: linear-gradient(135deg, #FF7050 0%, #FF9C76 100%);
+  }
+
+  /* ============ DEVICE FRAME ============ */
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .device {
+    width: 393px;
+    height: 852px;
+    background: #1a1a1c;
+    border-radius: 55px;
+    padding: 12px;
+    box-shadow:
+      0 0 0 2px #2a2a2c,
+      0 30px 80px rgba(0,0,0,0.5),
+      0 60px 120px rgba(255, 94, 58, 0.08);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .device::before, .device::after {
+    content: '';
+    position: absolute;
+    background: #0a0a0a;
+    border-radius: 2px;
+  }
+  .device::before { left: -3px; top: 110px; width: 3px; height: 32px; }
+  .device::after { left: -3px; top: 170px; width: 3px; height: 56px; }
+  .volume-up, .volume-down, .power-btn {
+    position: absolute;
+    background: #0a0a0a;
+    border-radius: 2px;
+  }
+  .volume-up { left: -3px; top: 240px; width: 3px; height: 56px; }
+  .power-btn { right: -3px; top: 200px; width: 3px; height: 90px; }
+
+  .device-screen {
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Status bar */
+  .status-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 54px;
+    padding: 18px 36px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    z-index: 500;
+    pointer-events: none;
+  }
+  .status-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .status-icons svg { display: block; }
+
+  /* Dynamic Island */
+  .dynamic-island {
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 34px;
+    background: #0a0a0a;
+    border-radius: 20px;
+    z-index: 510;
+  }
+
+  /* Home indicator */
+  .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: var(--text-primary);
+    border-radius: 3px;
+    z-index: 150;
+    opacity: 0.9;
+  }
+
+  /* ============ APP CONTAINER ============ */
+  .app-root {
+    position: absolute;
+    inset: 0;
+    padding-top: 54px;
+    padding-bottom: 86px;
+    overflow: hidden;
+  }
+
+  .tab-view {
+    position: absolute;
+    inset: 54px 0 86px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .tab-view[hidden] { display: none; }
+
+  /* App header */
+  .app-header {
+    padding: 8px 20px 12px;
+    flex-shrink: 0;
+  }
+  .app-header h1 {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+  }
+  .event-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 5px 10px;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .event-pill .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.4); }
+  }
+
+  /* ============ MAP AREA ============ */
+  .map-area {
+    flex: 1;
+    margin: 0 16px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--map-bg-1) 0%, var(--map-bg-2) 100%);
+    overflow: hidden;
+    position: relative;
+    min-height: 200px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
+  }
+  .floor-plan {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .floor-plan .fp-bg { fill: var(--map-bg-1); }
+  .floor-plan .fp-hall { stroke: var(--map-hall); }
+  .floor-plan .fp-booth { fill: var(--map-booth); }
+  .floor-plan .fp-booth-alt { fill: var(--map-booth-alt); }
+  .floor-plan .fp-dot { fill: var(--map-detail); }
+  .floor-plan .fp-stage { stroke: var(--primary); }
+  .map-overlay {
+    position: absolute;
+    inset: 0;
+  }
+  .map-pin {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    z-index: 2;
+  }
+  .map-pin:active { transform: translate(-50%, -50%) scale(0.92); }
+  .map-pin .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  }
+  .map-pin::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #fff;
+  }
+  .you-pin {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+  }
+  .you-pin .ring {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--you-pin);
+    border: 4px solid #fff;
+    box-shadow: 0 0 0 2px var(--you-pin), 0 0 0 12px var(--you-pin-glow-1);
+    animation: youPulse 2.5s ease-in-out infinite;
+  }
+  @keyframes youPulse {
+    0%, 100% { box-shadow: 0 0 0 2px var(--you-pin), 0 0 0 12px var(--you-pin-glow-1); }
+    50% { box-shadow: 0 0 0 2px var(--you-pin), 0 0 0 22px var(--you-pin-glow-0); }
+  }
+  .map-overlay-label {
+    position: absolute;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--map-label);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    pointer-events: none;
+  }
+  .map-zoom-controls {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    display: flex;
+    flex-direction: column;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 2px 12px var(--border);
+    overflow: hidden;
+    z-index: 5;
+  }
+  .map-zoom-controls button {
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .map-zoom-controls button + button {
+    border-top: 1px solid var(--border);
+  }
+  .map-zoom-controls button:active { background: var(--bg-secondary); }
+
+  /* ============ SPLIT BOTTOM ============ */
+  .split-bottom {
+    height: 290px;
+    margin: 12px 0 0;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  /* Connect CTA (pre-share) */
+  .connect-cta {
+    margin: 0 16px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-grad-end) 100%);
+    border-radius: 22px;
+    padding: 24px;
+    color: #fff;
+    box-shadow: 0 8px 24px var(--primary-shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .connect-cta::before {
+    content: '';
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+  }
+  .connect-cta::after {
+    content: '';
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .connect-cta-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .connect-cta h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+    letter-spacing: -0.3px;
+  }
+  .connect-cta p {
+    font-size: 14px;
+    opacity: 0.92;
+    line-height: 1.4;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
+  }
+  .connect-cta button {
+    background: #fff;
+    color: var(--primary);
+    border: none;
+    border-radius: 14px;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: 700;
+    width: 100%;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.15s ease;
+  }
+  .connect-cta button:active { transform: scale(0.97); }
+
+  /* Connection list (sharing state) */
+  .connection-list {
+    height: 100%;
+    overflow-y: auto;
+    padding: 0 0 20px;
+  }
+  .list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px 8px;
+  }
+  .list-header h3 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary);
+  }
+  .stop-share-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 0;
+  }
+
+  .conn-row-wrap {
+    position: relative;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .conn-row-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    display: flex;
+  }
+  .conn-row-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 88px;
+    background: var(--slate-action);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 0 6px;
+    text-align: center;
+    line-height: 1.15;
+  }
+  .conn-row-action.mute { background: var(--text-tertiary); }
+  .conn-row-action.block { background: var(--primary); }
+  .conn-row-action.stop { background: var(--primary); }
+  .conn-row-action svg { display: block; }
+
+  .conn-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: var(--bg);
+    position: relative;
+    z-index: 1;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    touch-action: pan-y;
+    cursor: pointer;
+  }
+  .conn-row:active { background: var(--bg-secondary); }
+  .conn-row.swiped { transform: translateX(-176px); }
+  .conn-row + .conn-row { border-top: 0.5px solid var(--row-divider); }
+  .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .avatar.lg { width: 72px; height: 72px; font-size: 24px; }
+  .avatar.sm { width: 32px; height: 32px; font-size: 11px; }
+  .conn-row-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .conn-row-text .name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+  .conn-row-text .meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .conn-row-distance {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--primary);
+    background: var(--primary-light);
+    padding: 4px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+
+  /* Empty connection state */
+  .empty-state {
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .empty-state-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--primary-light);
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+  }
+  .empty-state h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .empty-state p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ============ MESSAGES TAB ============ */
+  .messages-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .messages-list .section-label {
+    padding: 4px 20px 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary);
+  }
+  .msg-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    cursor: pointer;
+    background: var(--bg);
+    border-top: 0.5px solid var(--row-divider);
+    position: relative;
+    z-index: 1;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), background 0.15s ease;
+    touch-action: pan-y;
+  }
+  .msg-row:active { background: var(--bg-secondary); }
+  .msg-row.swiped { transform: translateX(-176px); }
+  .msg-row-text { flex: 1; min-width: 0; }
+  .msg-row-text .name { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+  .msg-row-text .meta { font-size: 13px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .msg-row .chevron {
+    color: var(--text-quaternary);
+    flex-shrink: 0;
+  }
+  .here-now-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-left: 6px;
+  }
+  .here-now-badge::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--primary);
+  }
+
+  /* ============ TAB BAR ============ */
+  .tab-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 86px;
+    background: var(--surface-elevated);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 24px;
+    border-top: 0.5px solid var(--border);
+    z-index: 50;
+  }
+  .tab-bar button {
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 24px;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    transition: color 0.15s ease;
+  }
+  .tab-bar button.active { color: var(--primary); }
+  .tab-bar button span {
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  /* ============ MODAL (SHARE LOCATION) ============ */
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: var(--modal-backdrop);
+    backdrop-filter: blur(2px);
+    z-index: 300;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .modal-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal-sheet {
+    width: 100%;
+    background: var(--bg);
+    border-radius: 28px 28px 0 0;
+    padding: 12px 24px 32px;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    max-height: 85%;
+    overflow-y: auto;
+  }
+  .modal-backdrop.open .modal-sheet { transform: translateY(0); }
+  .modal-grip {
+    width: 40px;
+    height: 5px;
+    background: var(--text-quaternary);
+    border-radius: 3px;
+    margin: 0 auto 18px;
+  }
+  .modal-sheet h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+  .modal-sheet > p.subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.4;
+  }
+
+  /* Hour dial */
+  .hour-dial-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .hour-dial-label .value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.5px;
+  }
+  .hour-dial-label .value .unit {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-left: 4px;
+  }
+  .hour-dial {
+    position: relative;
+    margin-bottom: 24px;
+    height: 70px;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .hour-dial-ticks {
+    position: relative;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    display: flex;
+    align-items: center;
+    padding: 0 calc(50% - 28px);
+  }
+  .hour-dial-ticks::-webkit-scrollbar { display: none; }
+  .hour-tick {
+    flex-shrink: 0;
+    width: 56px;
+    text-align: center;
+    scroll-snap-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px 0;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  .hour-tick.selected {
+    color: var(--primary);
+    font-size: 22px;
+    font-weight: 700;
+    transform: scale(1.05);
+  }
+  .hour-dial-marker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px;
+    height: 48px;
+    border: 2px solid var(--primary);
+    border-radius: 12px;
+    pointer-events: none;
+  }
+
+  /* Event input */
+  .input-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+  .input-label .optional {
+    font-weight: 500;
+    color: var(--text-tertiary);
+    margin-left: 4px;
+  }
+  .event-input-wrap {
+    position: relative;
+    margin-bottom: 24px;
+  }
+  .event-input {
+    width: 100%;
+    background: var(--bg-secondary);
+    border: none;
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+  }
+  .event-input::placeholder { color: var(--text-tertiary); }
+  .event-input:focus {
+    box-shadow: 0 0 0 2px var(--primary);
+    background: #fff;
+  }
+  .event-suggestions {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .event-suggestion {
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .event-suggestion:active {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary-dark);
+  }
+
+  .modal-confirm {
+    width: 100%;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .modal-confirm:active { transform: scale(0.98); }
+  .modal-cancel {
+    width: 100%;
+    background: none;
+    color: var(--text-secondary);
+    border: none;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+
+  /* ============ PROFILE SHEET ============ */
+  .profile-sheet {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 250;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .profile-sheet.open { transform: translateY(0); }
+  .profile-sheet-header {
+    padding: 60px 16px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .profile-sheet-header button {
+    background: var(--hit-bg);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .profile-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 20px 100px;
+  }
+  .profile-hero {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .profile-hero .name {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    letter-spacing: -0.3px;
+  }
+  .profile-hero .headline {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  .profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--bg-secondary);
+    border-radius: 14px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .stat-card .v {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.3px;
+    margin-bottom: 2px;
+  }
+  .stat-card .l {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+  }
+
+  .profile-section {
+    margin-bottom: 24px;
+  }
+  .profile-section h4 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+  .profile-section p {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-primary);
+  }
+  .event-history-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+  }
+  .event-history-row + .event-history-row {
+    border-top: 0.5px solid var(--row-divider);
+  }
+  .event-history-icon {
+    width: 38px;
+    height: 38px;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+  .event-history-row.active .event-history-icon {
+    background: var(--primary-light);
+  }
+  .event-history-text { flex: 1; }
+  .event-history-text .name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+  }
+  .event-history-text .date {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 1px;
+  }
+
+  .profile-cta {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 20px 28px;
+    background: linear-gradient(to top, var(--bg) 70%, rgba(255, 251, 246, 0));
+    z-index: 2;
+  }
+  .profile-cta button {
+    width: 100%;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 6px 20px var(--primary-shadow-strong);
+    transition: transform 0.15s ease;
+  }
+  .profile-cta button:active { transform: scale(0.98); }
+
+  /* ============ CHAT SCREEN ============ */
+  .chat-screen {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 260;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .chat-screen.open { transform: translateX(0); }
+  .chat-header {
+    padding: 60px 16px 8px;
+    background: var(--surface-elevated);
+    backdrop-filter: blur(20px);
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .chat-back-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+  }
+  .chat-header-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+  }
+  .chat-header-user .name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .chat-header-user .status {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .chat-context-banner {
+    background: var(--primary-light);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--primary-dark);
+    text-align: center;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .chat-context-banner strong { font-weight: 700; }
+  .chat-msg {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 15px;
+    line-height: 1.35;
+    word-wrap: break-word;
+  }
+  .chat-msg.from-me {
+    align-self: flex-end;
+    background: var(--primary);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .chat-msg.from-them {
+    align-self: flex-start;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-bottom-left-radius: 4px;
+  }
+  .chat-composer {
+    padding: 12px 16px 28px;
+    background: var(--surface-elevated);
+    backdrop-filter: blur(20px);
+    border-top: 0.5px solid var(--border);
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    flex-shrink: 0;
+  }
+  .chat-composer-input {
+    flex: 1;
+    background: #fff;
+    border: 1px solid var(--border-strong);
+    border-radius: 20px;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    min-height: 40px;
+    max-height: 100px;
+    resize: none;
+    outline: none;
+    line-height: 1.3;
+  }
+  .chat-composer-input:focus {
+    border-color: var(--primary);
+  }
+  .chat-send-btn {
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+  .chat-send-btn:active { transform: scale(0.92); }
+  .chat-send-btn:disabled {
+    background: var(--text-quaternary);
+    cursor: default;
+  }
+
+  /* ============ TOAST ============ */
+  .toast {
+    position: absolute;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: var(--toast-bg);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 400;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ============ APP HEADER ROW ============ */
+  .app-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .gear-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--hit-bg);
+    border: none;
+    border-radius: 50%;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+  .gear-btn:active { transform: scale(0.92); background: var(--bg-secondary); }
+
+  /* ============ LOGIN / SIGNUP SCREEN ============ */
+  .login-screen {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 600;
+    background: var(--bg);
+    padding: 64px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .login-screen[hidden] { display: none; }
+  .login-screen.exiting {
+    opacity: 0;
+    transform: scale(0.98);
+    pointer-events: none;
+  }
+  .login-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: var(--logo-bg);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px var(--primary-shadow);
+  }
+  .login-logo svg { color: #fff; }
+  .login-screen h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .login-screen .tagline {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: 26px;
+  }
+  .auth-mode-tabs {
+    display: flex;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 22px;
+  }
+  .auth-mode-tabs button {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 9px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .auth-mode-tabs button.active {
+    background: var(--surface);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .device-screen[data-theme="dark"] .auth-mode-tabs button.active {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  .social-btn {
+    width: 100%;
+    height: 50px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: transform 0.1s ease, opacity 0.2s ease;
+    border: 1px solid transparent;
+  }
+  .social-btn:active { transform: scale(0.98); }
+  .social-btn.apple { background: var(--apple-btn); color: var(--apple-text); }
+  .social-btn.google { background: var(--google-btn); color: var(--google-text); border-color: var(--google-border); }
+  .social-btn.linkedin { background: var(--linkedin-btn); color: var(--linkedin-text); }
+
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0;
+    color: var(--text-tertiary);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .auth-field {
+    width: 100%;
+    background: var(--bg-secondary);
+    border: 1px solid transparent;
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+    margin-bottom: 10px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .auth-field::placeholder { color: var(--text-tertiary); }
+  .auth-field:focus {
+    border-color: var(--primary);
+    background: var(--surface);
+  }
+  .auth-submit {
+    width: 100%;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: transform 0.15s ease;
+  }
+  .auth-submit:active { transform: scale(0.98); }
+  .auth-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .auth-footer {
+    margin-top: auto;
+    padding-top: 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    line-height: 1.5;
+  }
+  .auth-reset {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  /* ============ SETTINGS SCREEN ============ */
+  .settings-screen {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 270;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .settings-screen.open { transform: translateX(0); }
+  .settings-header {
+    padding: 60px 16px 12px;
+    background: var(--surface-elevated);
+    backdrop-filter: blur(20px);
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .settings-header h2 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+    text-align: center;
+    margin-right: 30px;
+  }
+  .settings-back-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    gap: 2px;
+  }
+  .settings-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px 100px;
+  }
+
+  .settings-section {
+    margin-bottom: 24px;
+  }
+  .settings-section-label {
+    padding: 0 8px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary);
+  }
+  .settings-group {
+    background: var(--surface);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 0.5px solid var(--border);
+  }
+  .device-screen[data-theme="dark"] .settings-group {
+    background: var(--bg-secondary);
+  }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    min-height: 50px;
+    color: var(--text-primary);
+    font-size: 15px;
+  }
+  .settings-row + .settings-row {
+    border-top: 0.5px solid var(--row-divider);
+  }
+  .settings-row-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .device-screen[data-theme="dark"] .settings-row-icon {
+    color: var(--primary);
+  }
+  .settings-row-label {
+    flex: 1;
+    font-weight: 500;
+  }
+  .settings-row-value {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+  .settings-row.tappable { cursor: pointer; }
+  .settings-row.tappable:active { background: var(--hit-bg); }
+  .settings-row .chevron { color: var(--text-quaternary); }
+
+  /* iOS-style toggle */
+  .ios-toggle {
+    width: 50px;
+    height: 30px;
+    background: var(--text-quaternary);
+    border-radius: 16px;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    transition: background 0.25s ease;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .ios-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 26px;
+    height: 26px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .ios-toggle.on { background: #34C759; }
+  .ios-toggle.on::after { transform: translateX(20px); }
+
+  /* Segmented control */
+  .segmented {
+    display: flex;
+    background: var(--bg-secondary);
+    border-radius: 9px;
+    padding: 2px;
+    gap: 2px;
+  }
+  .segmented button {
+    background: none;
+    border: none;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .segmented button.active {
+    background: var(--surface);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .device-screen[data-theme="dark"] .segmented button.active {
+    background: var(--surface);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  /* Stepper for default share duration */
+  .stepper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg-secondary);
+    border-radius: 9px;
+    padding: 2px;
+  }
+  .stepper button {
+    width: 28px;
+    height: 28px;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 7px;
+  }
+  .stepper button:active { background: var(--surface); }
+  .stepper .value {
+    min-width: 30px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  /* LinkedIn connect block */
+  .linkedin-connect {
+    padding: 16px;
+  }
+  .linkedin-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .linkedin-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--linkedin-btn);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .linkedin-status-text { flex: 1; min-width: 0; }
+  .linkedin-status-text .title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .linkedin-status-text .subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .linkedin-input-row {
+    display: flex;
+    gap: 8px;
+  }
+  .linkedin-input {
+    flex: 1;
+    background: var(--bg-secondary);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+    min-width: 0;
+  }
+  .linkedin-input:focus {
+    border-color: var(--primary);
+    background: var(--surface);
+  }
+  .linkedin-btn-action {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, opacity 0.2s ease;
+  }
+  .linkedin-btn-action:active { transform: scale(0.96); }
+  .linkedin-btn-action:disabled { opacity: 0.6; cursor: default; }
+  .linkedin-btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .linkedin-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 10px;
+  }
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .danger-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    color: #FF3B30;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 14px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .danger-btn:active { background: var(--hit-bg); }
+
+  /* ============ CAPTION ============ */
+  .caption {
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    text-align: center;
+    max-width: 393px;
+    line-height: 1.5;
+  }
+  .caption strong { color: var(--primary); }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="device">
+      <div class="volume-up"></div>
+      <div class="power-btn"></div>
+      <div class="device-screen">
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="status-icons">
+            <svg width="18" height="11" viewBox="0 0 18 11"><path fill="currentColor" d="M1 8h2v3H1zM5 6h2v5H5zM9 4h2v7H9zM13 1h2v10h-2z"/></svg>
+            <svg width="16" height="11" viewBox="0 0 16 11"><path fill="currentColor" d="M8 2.5c2.1 0 4 .8 5.5 2.1l1-1A9 9 0 0 0 8 1a9 9 0 0 0-6.5 2.6l1 1A8 8 0 0 1 8 2.5zm0 3a5 5 0 0 1 3.5 1.4l1-1A6.5 6.5 0 0 0 8 4a6.5 6.5 0 0 0-4.5 1.9l1 1A5 5 0 0 1 8 5.5zM8 8a2.5 2.5 0 0 0-1.8.7L8 10.5l1.8-1.8A2.5 2.5 0 0 0 8 8z"/></svg>
+            <svg width="27" height="13" viewBox="0 0 27 13"><rect x="0.5" y="0.5" width="22" height="11" rx="3" fill="none" stroke="currentColor"/><rect x="23.5" y="4" width="1.5" height="4" rx="0.5" fill="currentColor"/><rect x="2" y="2" width="18" height="8" rx="2" fill="currentColor"/></svg>
+          </div>
+        </div>
+
+        <!-- Dynamic Island -->
+        <div class="dynamic-island"></div>
+
+        <div class="app-root">
+
+          <!-- ============ DISCOVER TAB ============ -->
+          <section class="tab-view" data-tab="discover">
+            <div class="app-header">
+              <div class="app-header-row">
+                <h1>Discover</h1>
+                <button class="gear-btn" onclick="openSettings()" aria-label="Settings">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="event-pill" id="eventPill" style="display:none;">
+                <span class="dot"></span>
+                <span id="eventPillText">Sharing</span>
+              </div>
+            </div>
+
+            <!-- Map -->
+            <div class="map-area">
+              <svg class="floor-plan" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice">
+                <rect class="fp-bg" width="400" height="400"/>
+                <path class="fp-hall" d="M0 140 H400 M0 260 H400 M140 0 V400 M260 0 V400" stroke-width="22"/>
+                <rect class="fp-booth" x="20" y="20" width="100" height="100" rx="8"/>
+                <rect class="fp-booth" x="160" y="20" width="80" height="100" rx="8"/>
+                <rect class="fp-booth" x="280" y="20" width="100" height="100" rx="8"/>
+                <rect class="fp-booth" x="20" y="160" width="100" height="80" rx="8"/>
+                <rect class="fp-booth-alt" x="160" y="160" width="80" height="80" rx="8"/>
+                <rect class="fp-booth" x="280" y="160" width="100" height="80" rx="8"/>
+                <rect class="fp-booth" x="20" y="280" width="100" height="100" rx="8"/>
+                <rect class="fp-booth" x="160" y="280" width="80" height="100" rx="8"/>
+                <rect class="fp-booth" x="280" y="280" width="100" height="100" rx="8"/>
+                <circle class="fp-dot" cx="70" cy="70" r="3"/>
+                <circle class="fp-dot" cx="200" cy="70" r="3"/>
+                <circle class="fp-dot" cx="330" cy="70" r="3"/>
+                <circle class="fp-dot" cx="70" cy="200" r="3"/>
+                <circle class="fp-dot" cx="330" cy="200" r="3"/>
+                <rect class="fp-stage" x="160" y="160" width="80" height="80" rx="8" fill="none" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.5"/>
+              </svg>
+
+              <div class="map-overlay">
+                <span class="map-overlay-label" style="top:14%; left:10%;">Hall A</span>
+                <span class="map-overlay-label" style="top:14%; left:42%;">Main Stage</span>
+                <span class="map-overlay-label" style="top:14%; left:78%;">Hall B</span>
+                <span class="map-overlay-label" style="top:53%; left:42%;">Demo Floor</span>
+                <span class="map-overlay-label" style="top:88%; left:42%;">Sponsor Lounge</span>
+
+                <!-- You pin (always visible) -->
+                <div class="you-pin" style="top:62%; left:50%;">
+                  <div class="ring"></div>
+                </div>
+
+                <!-- Connection pins (rendered by JS when sharing) -->
+                <div id="mapPins"></div>
+              </div>
+
+              <div class="map-zoom-controls">
+                <button>+</button>
+                <button>−</button>
+              </div>
+            </div>
+
+            <!-- Bottom split area -->
+            <div class="split-bottom">
+              <!-- Pre-share CTA -->
+              <div class="connect-cta" id="connectCta">
+                <div class="connect-cta-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-7 8-13a8 8 0 0 0-16 0c0 6 8 13 8 13z"/>
+                    <circle cx="12" cy="9" r="2.5"/>
+                  </svg>
+                </div>
+                <h2>Connect</h2>
+                <p>Share your location to see which of your network are at the event with you.</p>
+                <button onclick="openShareModal()">Share my location</button>
+              </div>
+
+              <!-- Sharing list -->
+              <div class="connection-list" id="connectionList" style="display:none;">
+                <div class="list-header">
+                  <h3 id="listHeaderTitle">Connections nearby</h3>
+                  <button class="stop-share-btn" onclick="stopSharing()">Stop sharing</button>
+                </div>
+                <div id="connectionRows"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ MESSAGES TAB ============ -->
+          <section class="tab-view" data-tab="messages" hidden>
+            <div class="app-header">
+              <div class="app-header-row">
+                <h1>Messages</h1>
+                <button class="gear-btn" onclick="openSettings()" aria-label="Settings">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="event-pill" id="messagesEventPill" style="display:none;">
+                <span class="dot"></span>
+                <span id="messagesEventPillText">At the event</span>
+              </div>
+            </div>
+            <div class="messages-list" id="messagesList">
+              <!-- populated by JS -->
+            </div>
+          </section>
+
+          <!-- ============ SHARE MODAL ============ -->
+          <div class="modal-backdrop" id="shareModal">
+            <div class="modal-sheet">
+              <div class="modal-grip"></div>
+              <h2>Share your location</h2>
+              <p class="subtitle">Your network can see you on the map for as long as you choose.</p>
+
+              <div class="hour-dial-label">
+                <span>How long?</span>
+                <span class="value"><span id="hourValue">2</span><span class="unit">hours</span></span>
+              </div>
+              <div class="hour-dial">
+                <div class="hour-dial-marker"></div>
+                <div class="hour-dial-ticks" id="hourTicks">
+                  <div class="hour-tick" data-hours="1">1</div>
+                  <div class="hour-tick selected" data-hours="2">2</div>
+                  <div class="hour-tick" data-hours="3">3</div>
+                  <div class="hour-tick" data-hours="4">4</div>
+                  <div class="hour-tick" data-hours="5">5</div>
+                  <div class="hour-tick" data-hours="6">6</div>
+                  <div class="hour-tick" data-hours="8">8</div>
+                  <div class="hour-tick" data-hours="12">12</div>
+                </div>
+              </div>
+
+              <div class="input-label">Event <span class="optional">(optional)</span></div>
+              <div class="event-input-wrap">
+                <input class="event-input" id="eventInput" placeholder="e.g. SaaStr Annual 2026" autocomplete="off">
+                <div class="event-suggestions">
+                  <button class="event-suggestion" onclick="setEvent('TechCrunch Disrupt 2026')">TechCrunch Disrupt 2026</button>
+                  <button class="event-suggestion" onclick="setEvent('SaaStr Annual')">SaaStr Annual</button>
+                  <button class="event-suggestion" onclick="setEvent('Web Summit')">Web Summit</button>
+                </div>
+              </div>
+
+              <button class="modal-confirm" onclick="confirmShare()">Share for <span id="confirmHours">2</span> hours</button>
+              <button class="modal-cancel" onclick="closeShareModal()">Cancel</button>
+            </div>
+          </div>
+
+        </div><!-- /app-root (moved closing here so profile-sheet & chat overlay correctly) -->
+
+          <!-- ============ PROFILE SHEET ============ -->
+          <div class="profile-sheet" id="profileSheet">
+            <div class="profile-sheet-header">
+              <button onclick="closeProfile()" aria-label="Close">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+              <span style="font-size:13px; color:var(--text-secondary); font-weight:600;">Profile</span>
+              <button aria-label="More" style="opacity:0;"></button>
+            </div>
+            <div class="profile-scroll" id="profileScroll">
+              <!-- populated by JS -->
+            </div>
+            <div class="profile-cta">
+              <button onclick="openChat()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                Let's chat
+              </button>
+            </div>
+          </div>
+
+          <!-- ============ CHAT SCREEN ============ -->
+          <section class="chat-screen" id="chatScreen">
+            <div class="chat-header">
+              <button class="chat-back-btn" onclick="closeChat()" aria-label="Back">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"/>
+                </svg>
+              </button>
+              <div class="chat-header-user">
+                <div class="avatar sm" id="chatAvatar">--</div>
+                <div>
+                  <div class="name" id="chatName">--</div>
+                  <div class="status" id="chatStatus">Active now</div>
+                </div>
+              </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+              <div class="chat-context-banner" id="chatContextBanner">
+                You and <strong id="bannerName">--</strong> are both at <strong id="bannerEvent">--</strong>.
+              </div>
+            </div>
+            <div class="chat-composer">
+              <textarea class="chat-composer-input" id="chatInput" rows="1" placeholder="Message"></textarea>
+              <button class="chat-send-btn" id="chatSendBtn" onclick="sendChat()" aria-label="Send">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="19" x2="12" y2="5"/>
+                  <polyline points="5 12 12 5 19 12"/>
+                </svg>
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ TOAST ============ -->
+          <div class="toast" id="toast">Toast message</div>
+
+          <!-- ============ SETTINGS SCREEN ============ -->
+          <section class="settings-screen" id="settingsScreen">
+            <div class="settings-header">
+              <button class="settings-back-btn" onclick="closeSettings()" aria-label="Back">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"/>
+                </svg>
+                Done
+              </button>
+              <h2>Settings</h2>
+            </div>
+            <div class="settings-scroll">
+
+              <!-- Account -->
+              <div class="settings-section">
+                <div class="settings-section-label">Account</div>
+                <div class="settings-group">
+                  <div class="settings-row">
+                    <div class="avatar" id="settingsAvatar" style="background:var(--primary); width:38px; height:38px; font-size:13px;">JG</div>
+                    <div class="settings-row-label">
+                      <div id="settingsAccountName" style="font-weight:600;">Josh Greco</div>
+                      <div style="font-size:12px; color:var(--text-secondary); font-weight:400;" id="settingsAccountEmail">greco.joshua@gmail.com</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- LinkedIn -->
+              <div class="settings-section">
+                <div class="settings-section-label">LinkedIn</div>
+                <div class="settings-group">
+                  <div class="linkedin-connect">
+                    <div class="linkedin-status">
+                      <div class="linkedin-icon">in</div>
+                      <div class="linkedin-status-text">
+                        <div class="title" id="linkedinTitle">Not connected</div>
+                        <div class="subtitle" id="linkedinSubtitle">Connect to import your network</div>
+                      </div>
+                    </div>
+                    <div id="linkedinConnectedView" style="display:none;">
+                      <div style="display:flex; gap:8px;">
+                        <button class="linkedin-btn-secondary" onclick="refreshLinkedIn()">Refresh connections</button>
+                        <button class="linkedin-btn-secondary" onclick="disconnectLinkedIn()" style="color:#FF3B30;">Disconnect</button>
+                      </div>
+                    </div>
+                    <div id="linkedinNotConnectedView">
+                      <div class="linkedin-input-row">
+                        <input class="linkedin-input" id="linkedinInput" placeholder="linkedin.com/in/yourname" autocomplete="off">
+                        <button class="linkedin-btn-action" id="linkedinConnectBtn" onclick="connectLinkedIn()">Connect</button>
+                      </div>
+                    </div>
+                    <div class="linkedin-loading" id="linkedinLoading" style="display:none;">
+                      <div class="spinner"></div>
+                      <span id="linkedinLoadingText">Authenticating…</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Appearance -->
+              <div class="settings-section">
+                <div class="settings-section-label">Appearance</div>
+                <div class="settings-group">
+                  <div class="settings-row">
+                    <div class="settings-row-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                      </svg>
+                    </div>
+                    <div class="settings-row-label">Theme</div>
+                    <div class="segmented" id="themeSegmented">
+                      <button data-theme="light" class="active">Light</button>
+                      <button data-theme="dark">Dark</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sharing -->
+              <div class="settings-section">
+                <div class="settings-section-label">Sharing</div>
+                <div class="settings-group">
+                  <div class="settings-row">
+                    <div class="settings-row-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                      </svg>
+                    </div>
+                    <div class="settings-row-label">Default duration</div>
+                    <div class="stepper">
+                      <button onclick="adjustDefaultHours(-1)">−</button>
+                      <div class="value"><span id="defaultHoursValue">2</span>h</div>
+                      <button onclick="adjustDefaultHours(1)">+</button>
+                    </div>
+                  </div>
+                  <div class="settings-row">
+                    <div class="settings-row-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                      </svg>
+                    </div>
+                    <div class="settings-row-label">Who can see you</div>
+                    <div class="segmented" id="audienceSegmented">
+                      <button data-aud="1st" class="active">1st</button>
+                      <button data-aud="1st+2nd">1st + 2nd</button>
+                    </div>
+                  </div>
+                  <div class="settings-row">
+                    <div class="settings-row-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-7 8-13a8 8 0 0 0-16 0c0 6 8 13 8 13z"/>
+                        <circle cx="12" cy="9" r="2.5"/>
+                      </svg>
+                    </div>
+                    <div class="settings-row-label">Auto-share at known events</div>
+                    <button class="ios-toggle" id="toggleAutoShare" onclick="toggleSetting('autoShareKnownEvents', this)"></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notifications -->
+              <div class="settings-section">
+                <div class="settings-section-label">Notifications</div>
+                <div class="settings-group">
+                  <div class="settings-row">
+                    <div class="settings-row-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                      </svg>
+                    </div>
+                    <div class="settings-row-label">Connection arrives at my event</div>
+                    <button class="ios-toggle on" id="toggleNotifNewSharer" onclick="toggleSetting('notifNewSharer', this)"></button>
+                  </div>
+                  <div class="settings-row">
+                    <div class="settings-row-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                      </svg>
+                    </div>
+                    <div class="settings-row-label">New messages</div>
+                    <button class="ios-toggle on" id="toggleNotifMessage" onclick="toggleSetting('notifNewMessage', this)"></button>
+                  </div>
+                  <div class="settings-row">
+                    <div class="settings-row-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                      </svg>
+                    </div>
+                    <div class="settings-row-label">Sharing about to expire</div>
+                    <button class="ios-toggle on" id="toggleNotifExpiring" onclick="toggleSetting('notifExpiring', this)"></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sign out & Reset -->
+              <div class="settings-section">
+                <div class="settings-group">
+                  <button class="danger-btn" onclick="signOut()">Sign out</button>
+                </div>
+                <div style="text-align:center; padding-top:18px;">
+                  <button class="auth-reset" onclick="resetPrototype()">Reset prototype</button>
+                  <div style="font-size:11px; color:var(--text-tertiary); margin-top:4px;">Linkup prototype v0.2</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ LOGIN / SIGNUP SCREEN ============ -->
+          <section class="login-screen" id="loginScreen" hidden>
+            <div class="login-logo">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-7 8-13a8 8 0 0 0-16 0c0 6 8 13 8 13z"/>
+                <circle cx="12" cy="9" r="2.5"/>
+              </svg>
+            </div>
+            <h1 id="loginTitle">Welcome to Linkup</h1>
+            <p class="tagline" id="loginTagline">Find your network at every event.</p>
+
+            <div class="auth-mode-tabs" id="authModeTabs">
+              <button data-mode="signin" class="active">Sign in</button>
+              <button data-mode="signup">Create account</button>
+            </div>
+
+            <button class="social-btn apple" onclick="socialLogin('apple')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.05 20.28c-.98.95-2.05.86-3.08.4-1.09-.47-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+              </svg>
+              <span id="appleBtnText">Continue with Apple</span>
+            </button>
+            <button class="social-btn google" onclick="socialLogin('google')">
+              <svg width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              <span id="googleBtnText">Continue with Google</span>
+            </button>
+            <button class="social-btn linkedin" onclick="socialLogin('linkedin')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/>
+              </svg>
+              <span id="linkedinBtnText">Continue with LinkedIn</span>
+            </button>
+
+            <div class="auth-divider">or</div>
+
+            <input type="text" class="auth-field" id="authNameField" placeholder="Full name" autocomplete="name" style="display:none;">
+            <input type="email" class="auth-field" id="authEmailField" placeholder="Email" autocomplete="email">
+            <input type="password" class="auth-field" id="authPasswordField" placeholder="Password" autocomplete="current-password">
+            <button class="auth-submit" id="authSubmitBtn" onclick="emailAuth()">Sign in</button>
+
+            <div class="auth-footer">
+              By continuing you agree to Linkup's terms and privacy policy.
+              <div style="margin-top:14px;">
+                <button class="auth-reset" onclick="resetPrototype()">Reset prototype</button>
+              </div>
+            </div>
+          </section>
+
+
+        <!-- Tab Bar -->
+        <nav class="tab-bar">
+          <button class="active" data-tab="discover" onclick="switchTab('discover')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+            </svg>
+            <span>Discover</span>
+          </button>
+          <button data-tab="messages" onclick="switchTab('messages')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span>Messages</span>
+          </button>
+        </nav>
+
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+    <p class="caption">
+      <strong>Linkup</strong> — interactive prototype.
+      Sign up or sign in, then tap <strong>Share my location</strong>. Use the gear icon (top right) for Settings — connect LinkedIn, switch themes, adjust sharing prefs.
+    </p>
+  </div>
+
+  <script>
+    // ============ STATE & DATA ============
+    const STORAGE_KEY = 'linkup_v02';
+    const state = {
+      sharing: false,
+      event: '',
+      hours: 2,
+      activeTab: 'discover',
+      activeProfileId: null,
+      mutedIds: new Set(),
+      blockedIds: new Set(),
+      hiddenFromIds: new Set(),
+      chats: {},
+      account: {
+        loggedIn: false,
+        name: '',
+        email: '',
+        initials: '',
+        authMethod: null, // 'email' | 'apple' | 'google' | 'linkedin'
+        linkedInConnected: false,
+        linkedInURL: '',
+        connectionCount: 0
+      },
+      settings: {
+        theme: 'light',
+        defaultShareHours: 2,
+        audience: '1st',
+        autoShareKnownEvents: false,
+        notifNewSharer: true,
+        notifNewMessage: true,
+        notifExpiring: true
+      },
+      authMode: 'signin' // 'signin' | 'signup'
+    };
+
+    // ============ PERSISTENCE ============
+    function saveState() {
+      try {
+        const payload = {
+          account: state.account,
+          settings: state.settings,
+          // optional: persist some prototype-y bits
+          chats: state.chats,
+          mutedIds: [...state.mutedIds],
+          blockedIds: [...state.blockedIds]
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (e) { /* localStorage blocked, no-op */ }
+    }
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (data.account) Object.assign(state.account, data.account);
+        if (data.settings) Object.assign(state.settings, data.settings);
+        if (data.chats) state.chats = data.chats;
+        if (data.mutedIds) state.mutedIds = new Set(data.mutedIds);
+        if (data.blockedIds) state.blockedIds = new Set(data.blockedIds);
+      } catch (e) { /* no-op */ }
+    }
+
+    const connections = [
+      { id: 'maya', name: 'Maya Rodriguez', headline: 'VP Engineering at Notion', initials: 'MR', color: 'var(--primary)',
+        connectedDate: 'March 2023', yearsExp: 12, yearsAtCompany: 3,
+        bio: 'Building dev tools that disappear into the workflow. Previously led platform at Stripe. Berlin → SF.',
+        sharedEvents: [
+          { name: 'Notion Make Conference 2024', date: 'Oct 2024' },
+          { name: 'Config 2023', date: 'Jun 2023' }
+        ],
+        map: { x: 22, y: 28 }
+      },
+      { id: 'david', name: 'David Kim', headline: 'Founder & CEO at Vercel', initials: 'DK', color: '#4F46E5',
+        connectedDate: 'August 2021', yearsExp: 15, yearsAtCompany: 6,
+        bio: 'Frontend Cloud. Open-source maintainer. Investing in early-stage devtools. Always shipping.',
+        sharedEvents: [
+          { name: 'Next.js Conf 2024', date: 'Oct 2024' }
+        ],
+        map: { x: 72, y: 22 }
+      },
+      { id: 'priya', name: 'Priya Sharma', headline: 'Senior PM at Stripe', initials: 'PS', color: '#EC4899',
+        connectedDate: 'February 2024', yearsExp: 7, yearsAtCompany: 2,
+        bio: 'Payments infra for global commerce. Currently shaping Stripe Connect. ex-Square, ex-Uber.',
+        sharedEvents: [
+          { name: 'Stripe Sessions 2025', date: 'May 2025' }
+        ],
+        map: { x: 38, y: 72 }
+      },
+      { id: 'marcus', name: 'Marcus Johnson', headline: 'Partner at Andreessen Horowitz', initials: 'MJ', color: '#10B981',
+        connectedDate: 'June 2022', yearsExp: 18, yearsAtCompany: 4,
+        bio: 'Early-stage investor focused on infrastructure, AI, and dev tools. Board member at 12 companies. Always reading.',
+        sharedEvents: [
+          { name: 'a16z Summit', date: 'Nov 2024' },
+          { name: 'Founders Forum 2024', date: 'Jun 2024' },
+          { name: 'TED 2023', date: 'Apr 2023' }
+        ],
+        map: { x: 78, y: 75 }
+      },
+      { id: 'elena', name: 'Elena Vasquez', headline: 'Principal Designer at Airbnb', initials: 'EV', color: '#F59E0B',
+        connectedDate: 'November 2023', yearsExp: 11, yearsAtCompany: 5,
+        bio: 'Design systems. Belonging through design. Speaker, mentor, occasional ceramicist. CDMX → SF.',
+        sharedEvents: [
+          { name: 'Config 2024', date: 'Jun 2024' },
+          { name: 'Awwwards Conference', date: 'Feb 2024' }
+        ],
+        map: { x: 18, y: 58 }
+      },
+      { id: 'jordan', name: 'Jordan Lee', headline: 'Engineering Manager at Linear', initials: 'JL', color: '#8B5CF6',
+        connectedDate: 'January 2025', yearsExp: 9, yearsAtCompany: 2,
+        bio: 'Building software for builders. Believer in small teams, high standards, and async-first.',
+        sharedEvents: [
+          { name: 'Linear Launch Week', date: 'Mar 2025' }
+        ],
+        map: { x: 58, y: 45 }
+      },
+      { id: 'sofia', name: 'Sofia Martinez', headline: 'Head of Growth at Figma', initials: 'SM', color: '#EF4444',
+        connectedDate: 'September 2022', yearsExp: 10, yearsAtCompany: 3,
+        bio: 'PLG operator. Scaled growth at Notion, now at Figma. Writes the Compound Growth newsletter.',
+        sharedEvents: [
+          { name: 'Config 2024', date: 'Jun 2024' },
+          { name: 'SaaStr Annual', date: 'Sep 2023' }
+        ],
+        map: { x: 85, y: 50 }
+      },
+      { id: 'aiden', name: 'Aiden Park', headline: 'DevRel Lead at Supabase', initials: 'AP', color: '#06B6D4',
+        connectedDate: 'July 2024', yearsExp: 6, yearsAtCompany: 1,
+        bio: 'Postgres evangelist. Open-source contributor. Streams live coding every Wednesday.',
+        sharedEvents: [
+          { name: 'Supabase Launch Week 12', date: 'Dec 2024' }
+        ],
+        map: { x: 50, y: 88 }
+      }
+    ];
+
+    // ============ HOUR DIAL ============
+    function initHourDial() {
+      const ticks = document.getElementById('hourTicks');
+      ticks.addEventListener('click', e => {
+        const tick = e.target.closest('.hour-tick');
+        if (!tick) return;
+        const hrs = parseInt(tick.dataset.hours, 10);
+        setHours(hrs);
+        // smoothly scroll to it
+        tick.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      });
+
+      // scroll-snap detection
+      let scrollTimeout;
+      ticks.addEventListener('scroll', () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          const center = ticks.scrollLeft + ticks.clientWidth / 2;
+          let closest = null;
+          let closestDist = Infinity;
+          ticks.querySelectorAll('.hour-tick').forEach(t => {
+            const dist = Math.abs(t.offsetLeft + t.offsetWidth / 2 - center);
+            if (dist < closestDist) { closestDist = dist; closest = t; }
+          });
+          if (closest) {
+            const hrs = parseInt(closest.dataset.hours, 10);
+            setHours(hrs);
+          }
+        }, 80);
+      });
+    }
+    function setHours(hrs) {
+      state.hours = hrs;
+      document.getElementById('hourValue').textContent = hrs;
+      document.getElementById('confirmHours').textContent = hrs;
+      document.querySelectorAll('.hour-tick').forEach(t => {
+        t.classList.toggle('selected', parseInt(t.dataset.hours, 10) === hrs);
+      });
+    }
+
+    // ============ SHARE MODAL ============
+    function openShareModal() {
+      document.getElementById('shareModal').classList.add('open');
+      // center the currently-selected tick
+      requestAnimationFrame(() => {
+        const sel = document.querySelector('.hour-tick.selected');
+        if (sel) sel.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'instant' });
+      });
+    }
+    function closeShareModal() {
+      document.getElementById('shareModal').classList.remove('open');
+    }
+    function setEvent(name) {
+      document.getElementById('eventInput').value = name;
+    }
+    function confirmShare() {
+      const ev = document.getElementById('eventInput').value.trim() || 'this event';
+      state.event = ev;
+      state.sharing = true;
+      closeShareModal();
+      renderSharing();
+      showToast(`Sharing for ${state.hours} hours · ${ev}`);
+    }
+    function stopSharing() {
+      state.sharing = false;
+      state.event = '';
+      state.hiddenFromIds.clear();
+      renderSharing();
+      showToast('Location sharing stopped');
+    }
+    function isUnavailableConnection(c) {
+      return state.mutedIds.has(c.id) || state.blockedIds.has(c.id);
+    }
+    function visibleConnections() {
+      return connections.filter(c => !isUnavailableConnection(c));
+    }
+
+    // ============ RENDER SHARING ============
+    function renderSharing() {
+      const cta = document.getElementById('connectCta');
+      const list = document.getElementById('connectionList');
+      const pill = document.getElementById('eventPill');
+      const pillText = document.getElementById('eventPillText');
+      const msgPill = document.getElementById('messagesEventPill');
+      const msgPillText = document.getElementById('messagesEventPillText');
+      const pins = document.getElementById('mapPins');
+
+      if (state.sharing) {
+        cta.style.display = 'none';
+        list.style.display = 'block';
+        pill.style.display = 'inline-flex';
+        pillText.textContent = `${state.event} · ${state.hours}h left`;
+        msgPill.style.display = 'inline-flex';
+        msgPillText.textContent = `${state.event}`;
+        document.getElementById('listHeaderTitle').textContent =
+          `${visibleConnections().length} at ${state.event}`;
+      } else {
+        cta.style.display = 'block';
+        list.style.display = 'none';
+        pill.style.display = 'none';
+        msgPill.style.display = 'none';
+      }
+      // re-render rows + pins
+      renderConnectionRows();
+      renderMapPins();
+      renderMessagesList();
+    }
+
+    function renderConnectionRows() {
+      const container = document.getElementById('connectionRows');
+      container.innerHTML = '';
+      visibleConnections().forEach(c => {
+        const distances = ['12 ft', '38 ft', '85 ft', '120 ft', '160 ft', '210 ft', '260 ft', '310 ft'];
+        const dist = distances[connections.indexOf(c)] || '~';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'conn-row-wrap';
+        wrap.innerHTML = `
+          <div class="conn-row-actions">
+            <button class="conn-row-action mute" data-action="mute" data-id="${c.id}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                <line x1="23" y1="9" x2="17" y2="15"/>
+                <line x1="17" y1="9" x2="23" y2="15"/>
+              </svg>
+              Mute
+            </button>
+            <button class="conn-row-action block" data-action="block" data-id="${c.id}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+              </svg>
+              Block
+            </button>
+          </div>
+          <div class="conn-row" data-id="${c.id}">
+            <div class="avatar" style="background:${c.color};">${c.initials}</div>
+            <div class="conn-row-text">
+              <div class="name">${c.name}</div>
+              <div class="meta">${c.headline}</div>
+            </div>
+            <div class="conn-row-distance">${dist}</div>
+          </div>
+        `;
+        container.appendChild(wrap);
+      });
+      bindSwipeRows(container);
+      bindRowTaps(container);
+    }
+
+    function renderMapPins() {
+      const pins = document.getElementById('mapPins');
+      pins.innerHTML = '';
+      if (!state.sharing) return;
+      connections.forEach(c => {
+        if (isUnavailableConnection(c)) return;
+        if (state.hiddenFromIds.has(c.id)) return;
+        const pin = document.createElement('div');
+        pin.className = 'map-pin';
+        pin.style.top = c.map.y + '%';
+        pin.style.left = c.map.x + '%';
+        pin.innerHTML = `<div class="avatar" style="background:${c.color}; width:34px; height:34px; font-size:11px;">${c.initials}</div>`;
+        pin.addEventListener('click', () => openProfile(c.id));
+        pins.appendChild(pin);
+      });
+    }
+
+    // ============ SWIPE GESTURE ============
+    function bindSwipeRows(root = document) {
+      root.querySelectorAll('.conn-row, .msg-row').forEach(row => {
+        let startX = 0, currentX = 0, startY = 0, isSwiping = false, swipeLocked = false;
+
+        const onStart = (e) => {
+          const t = e.touches ? e.touches[0] : e;
+          startX = t.clientX;
+          startY = t.clientY;
+          currentX = 0;
+          isSwiping = false;
+          swipeLocked = false;
+          row.style.transition = 'none';
+        };
+        const onMove = (e) => {
+          const t = e.touches ? e.touches[0] : e;
+          const dx = t.clientX - startX;
+          const dy = t.clientY - startY;
+          if (!swipeLocked) {
+            if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+              if (Math.abs(dx) > Math.abs(dy)) {
+                isSwiping = true;
+              }
+              swipeLocked = true;
+            }
+          }
+          if (!isSwiping) return;
+          e.preventDefault();
+          currentX = Math.min(0, Math.max(-176, dx + (row.classList.contains('swiped') ? -176 : 0)));
+          row.style.transform = `translateX(${currentX}px)`;
+        };
+        const onEnd = () => {
+          row.style.transition = '';
+          if (!isSwiping) {
+            row.style.transform = row.classList.contains('swiped') ? 'translateX(-176px)' : '';
+            return;
+          }
+          // close all other swiped rows
+          document.querySelectorAll('.conn-row, .msg-row').forEach(r => {
+            if (r !== row) { r.classList.remove('swiped'); r.style.transform = ''; }
+          });
+          if (currentX < -80) {
+            row.classList.add('swiped');
+            row.style.transform = '';
+          } else {
+            row.classList.remove('swiped');
+            row.style.transform = '';
+          }
+        };
+
+        row.addEventListener('touchstart', onStart, { passive: true });
+        row.addEventListener('touchmove', onMove, { passive: false });
+        row.addEventListener('touchend', onEnd);
+
+        // Mouse fallback
+        let mouseDown = false;
+        row.addEventListener('mousedown', e => { mouseDown = true; onStart(e); });
+        window.addEventListener('mousemove', e => { if (mouseDown) onMove(e); });
+        window.addEventListener('mouseup', () => { if (mouseDown) { mouseDown = false; onEnd(); } });
+      });
+
+      // action buttons
+      root.querySelectorAll('.conn-row-action').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          const id = btn.dataset.id;
+          const action = btn.dataset.action;
+          const conn = connections.find(c => c.id === id);
+          if (action === 'mute') {
+            state.mutedIds.add(id);
+            showToast(`Muted ${conn.name}`);
+          } else if (action === 'block') {
+            state.blockedIds.add(id);
+            state.hiddenFromIds.add(id);
+            showToast(`Blocked ${conn.name}`);
+          }
+          saveState();
+          renderSharing();
+        });
+      });
+    }
+    function bindRowTaps(root = document) {
+      root.querySelectorAll('.conn-row, .msg-row').forEach(row => {
+        row.addEventListener('click', e => {
+          if (row.classList.contains('swiped')) {
+            row.classList.remove('swiped');
+            row.style.transform = '';
+            return;
+          }
+          const openRow = document.querySelector('.conn-row.swiped, .msg-row.swiped');
+          if (openRow) {
+            openRow.classList.remove('swiped');
+            openRow.style.transform = '';
+            return;
+          }
+          const id = row.dataset.id;
+          openProfile(id);
+        });
+      });
+    }
+
+    // ============ TABS ============
+    function switchTab(tab) {
+      state.activeTab = tab;
+      document.querySelectorAll('.tab-view').forEach(v => {
+        v.hidden = v.dataset.tab !== tab;
+      });
+      document.querySelectorAll('.tab-bar button').forEach(b => {
+        b.classList.toggle('active', b.dataset.tab === tab);
+      });
+    }
+
+    // ============ MESSAGES LIST ============
+    function renderMessagesList() {
+      const list = document.getElementById('messagesList');
+      list.innerHTML = '';
+      if (!state.sharing) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <h4>No active event</h4>
+            <p>Start sharing your location on the Discover tab to see who's at your event.</p>
+          </div>
+        `;
+        return;
+      }
+      const label = document.createElement('div');
+      label.className = 'section-label';
+      label.textContent = `At ${state.event}`;
+      list.appendChild(label);
+
+      visibleConnections().forEach(c => {
+        const wrap = document.createElement('div');
+        wrap.className = 'conn-row-wrap';
+        const lastChat = state.chats[c.id] && state.chats[c.id].length
+          ? state.chats[c.id][state.chats[c.id].length - 1].text
+          : 'Tap to start a conversation';
+        wrap.innerHTML = `
+          <div class="conn-row-actions">
+            <button class="conn-row-action mute" data-action="mute" data-id="${c.id}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                <line x1="23" y1="9" x2="17" y2="15"/>
+                <line x1="17" y1="9" x2="23" y2="15"/>
+              </svg>
+              Mute
+            </button>
+            <button class="conn-row-action block" data-action="block" data-id="${c.id}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+              </svg>
+              Block
+            </button>
+          </div>
+          <div class="msg-row" data-id="${c.id}">
+            <div class="avatar" style="background:${c.color};">${c.initials}</div>
+            <div class="msg-row-text">
+              <div class="name">${c.name}<span class="here-now-badge">Here now</span></div>
+              <div class="meta">${lastChat}</div>
+            </div>
+            <div class="chevron">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        `;
+        list.appendChild(wrap);
+      });
+      bindSwipeRows(list);
+      bindRowTaps(list);
+    }
+
+    // ============ PROFILE SHEET ============
+    function openProfile(id) {
+      const c = connections.find(x => x.id === id);
+      if (!c) return;
+      state.activeProfileId = id;
+      const scroll = document.getElementById('profileScroll');
+
+      const sharedEventRows = c.sharedEvents.map(e => `
+        <div class="event-history-row">
+          <div class="event-history-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div class="event-history-text">
+            <div class="name">${e.name}</div>
+            <div class="date">${e.date}</div>
+          </div>
+        </div>
+      `).join('');
+
+      const activeEventRow = state.sharing ? `
+        <div class="event-history-row active">
+          <div class="event-history-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-7 8-13a8 8 0 0 0-16 0c0 6 8 13 8 13z"/>
+              <circle cx="12" cy="9" r="2.5"/>
+            </svg>
+          </div>
+          <div class="event-history-text">
+            <div class="name">${state.event} <span class="here-now-badge">Now</span></div>
+            <div class="date">Today</div>
+          </div>
+        </div>
+      ` : '';
+
+      scroll.innerHTML = `
+        <div class="profile-hero">
+          <div class="avatar lg" style="background:${c.color};">${c.initials}</div>
+          <div>
+            <div class="name">${c.name}</div>
+            <div class="headline">${c.headline}</div>
+          </div>
+        </div>
+
+        <div class="profile-stats">
+          <div class="stat-card">
+            <div class="v">${c.connectedDate.split(' ')[1]}</div>
+            <div class="l">Connected since</div>
+          </div>
+          <div class="stat-card">
+            <div class="v">${c.sharedEvents.length + (state.sharing ? 1 : 0)}</div>
+            <div class="l">Shared events</div>
+          </div>
+          <div class="stat-card">
+            <div class="v">${c.yearsExp}y</div>
+            <div class="l">Experience</div>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <h4>Bio</h4>
+          <p>${c.bio}</p>
+        </div>
+
+        <div class="profile-section">
+          <h4>Events you've been at together</h4>
+          ${activeEventRow}
+          ${sharedEventRows}
+        </div>
+
+        <div class="profile-section">
+          <h4>Career</h4>
+          <p>${c.yearsAtCompany} years at ${c.headline.split(' at ')[1] || 'current role'} · ${c.yearsExp} years total experience</p>
+        </div>
+      `;
+
+      document.getElementById('profileSheet').classList.add('open');
+    }
+    function closeProfile() {
+      document.getElementById('profileSheet').classList.remove('open');
+    }
+
+    // ============ CHAT ============
+    function openChat() {
+      const id = state.activeProfileId;
+      const c = connections.find(x => x.id === id);
+      if (!c) return;
+      document.getElementById('chatAvatar').textContent = c.initials;
+      document.getElementById('chatAvatar').style.background = c.color;
+      document.getElementById('chatName').textContent = c.name;
+      document.getElementById('chatStatus').textContent = state.sharing ? `At ${state.event}` : 'Active recently';
+      document.getElementById('bannerName').textContent = c.name.split(' ')[0];
+      document.getElementById('bannerEvent').textContent = state.event || 'the event';
+
+      // Restore message history
+      const msgsEl = document.getElementById('chatMessages');
+      // clear messages except banner
+      Array.from(msgsEl.querySelectorAll('.chat-msg')).forEach(m => m.remove());
+      (state.chats[id] || []).forEach(m => {
+        const el = document.createElement('div');
+        el.className = 'chat-msg from-' + m.from;
+        el.textContent = m.text;
+        msgsEl.appendChild(el);
+      });
+
+      // Prefilled message
+      const prefill = state.event
+        ? `I'm at ${state.event} too, where should we meet?`
+        : `I'm here too, where should we meet?`;
+      const input = document.getElementById('chatInput');
+      input.value = prefill;
+      input.style.height = 'auto';
+      input.style.height = input.scrollHeight + 'px';
+      autoResizeChatInput();
+
+      document.getElementById('chatScreen').classList.add('open');
+      setTimeout(() => msgsEl.scrollTop = msgsEl.scrollHeight, 100);
+    }
+    function closeChat() {
+      document.getElementById('chatScreen').classList.remove('open');
+    }
+    function sendChat() {
+      const id = state.activeProfileId;
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      state.chats[id] = state.chats[id] || [];
+      state.chats[id].push({ from: 'me', text });
+
+      const msgsEl = document.getElementById('chatMessages');
+      const el = document.createElement('div');
+      el.className = 'chat-msg from-me';
+      el.textContent = text;
+      msgsEl.appendChild(el);
+      input.value = '';
+      autoResizeChatInput();
+      msgsEl.scrollTop = msgsEl.scrollHeight;
+
+      // Simulated reply
+      setTimeout(() => {
+        const replies = [
+          "Hey! I'm by the main stage 👋",
+          "Yes! Let's grab coffee at the lounge.",
+          "Heading to the keynote — meet after?",
+          "Perfect, I'm at Hall B near the demos.",
+          "Just got here. See you in 5!"
+        ];
+        const reply = replies[Math.floor(Math.random() * replies.length)];
+        state.chats[id].push({ from: 'them', text: reply });
+        const el2 = document.createElement('div');
+        el2.className = 'chat-msg from-them';
+        el2.textContent = reply;
+        msgsEl.appendChild(el2);
+        msgsEl.scrollTop = msgsEl.scrollHeight;
+      }, 1200);
+    }
+    function autoResizeChatInput() {
+      const input = document.getElementById('chatInput');
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('chatInput').addEventListener('input', autoResizeChatInput);
+    });
+
+    // ============ TOAST ============
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    // ============ THEME ============
+    function applyTheme(theme) {
+      const screen = document.querySelector('.device-screen');
+      if (theme === 'dark') {
+        screen.setAttribute('data-theme', 'dark');
+      } else {
+        screen.removeAttribute('data-theme');
+      }
+      // sync segmented buttons
+      document.querySelectorAll('#themeSegmented button').forEach(b => {
+        b.classList.toggle('active', b.dataset.theme === theme);
+      });
+    }
+    function setTheme(theme) {
+      state.settings.theme = theme;
+      applyTheme(theme);
+      saveState();
+    }
+
+    // ============ AUTH / LOGIN ============
+    function setAuthMode(mode) {
+      state.authMode = mode;
+      document.querySelectorAll('#authModeTabs button').forEach(b => {
+        b.classList.toggle('active', b.dataset.mode === mode);
+      });
+      const nameField = document.getElementById('authNameField');
+      const submitBtn = document.getElementById('authSubmitBtn');
+      const title = document.getElementById('loginTitle');
+      const tagline = document.getElementById('loginTagline');
+      const appleText = document.getElementById('appleBtnText');
+      const googleText = document.getElementById('googleBtnText');
+      const linkedinText = document.getElementById('linkedinBtnText');
+
+      if (mode === 'signup') {
+        nameField.style.display = 'block';
+        submitBtn.textContent = 'Create account';
+        title.textContent = 'Create your Linkup account';
+        tagline.textContent = 'Find your network at every event.';
+        appleText.textContent = 'Sign up with Apple';
+        googleText.textContent = 'Sign up with Google';
+        linkedinText.textContent = 'Sign up with LinkedIn';
+      } else {
+        nameField.style.display = 'none';
+        submitBtn.textContent = 'Sign in';
+        title.textContent = 'Welcome back to Linkup';
+        tagline.textContent = 'Find your network at every event.';
+        appleText.textContent = 'Continue with Apple';
+        googleText.textContent = 'Continue with Google';
+        linkedinText.textContent = 'Continue with LinkedIn';
+      }
+    }
+
+    function deriveInitials(name) {
+      if (!name) return 'JG';
+      const parts = name.trim().split(/\s+/);
+      return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || name[0].toUpperCase();
+    }
+
+    function emailAuth() {
+      const email = document.getElementById('authEmailField').value.trim();
+      const pw = document.getElementById('authPasswordField').value;
+      const name = document.getElementById('authNameField').value.trim();
+
+      if (!email || !pw) {
+        showToast('Enter email and password');
+        return;
+      }
+      if (state.authMode === 'signup' && !name) {
+        showToast('Enter your name');
+        return;
+      }
+
+      const derivedName = name || (email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()));
+      finishLogin({
+        name: derivedName,
+        email,
+        authMethod: 'email',
+        linkedInConnected: false
+      });
+    }
+
+    function socialLogin(provider) {
+      // Simulated OAuth handoff
+      const seed = {
+        apple: { name: 'Josh Greco', email: 'greco.joshua@privaterelay.appleid.com' },
+        google: { name: 'Josh Greco', email: 'greco.joshua@gmail.com' },
+        linkedin: { name: 'Josh Greco', email: 'greco.joshua@gmail.com' }
+      }[provider];
+      const isLinkedIn = provider === 'linkedin';
+      finishLogin({
+        name: seed.name,
+        email: seed.email,
+        authMethod: provider,
+        linkedInConnected: isLinkedIn,
+        linkedInURL: isLinkedIn ? 'linkedin.com/in/joshgreco' : '',
+        connectionCount: isLinkedIn ? 342 : 0
+      });
+      if (isLinkedIn) showToast('Connected to LinkedIn · 342 connections');
+    }
+
+    function finishLogin(accountFields) {
+      Object.assign(state.account, accountFields, {
+        loggedIn: true,
+        initials: deriveInitials(accountFields.name)
+      });
+      saveState();
+      // animate login screen out
+      const login = document.getElementById('loginScreen');
+      login.classList.add('exiting');
+      setTimeout(() => {
+        login.hidden = true;
+        login.classList.remove('exiting');
+        refreshAccountUI();
+      }, 350);
+    }
+
+    function signOut() {
+      // keep settings + theme, clear account
+      state.account = {
+        loggedIn: false, name: '', email: '', initials: '',
+        authMethod: null, linkedInConnected: false, linkedInURL: '', connectionCount: 0
+      };
+      // also end any active session
+      if (state.sharing) {
+        state.sharing = false;
+        state.event = '';
+        state.hiddenFromIds.clear();
+        renderSharing();
+      }
+      closeSettings();
+      saveState();
+      document.getElementById('loginScreen').hidden = false;
+      setAuthMode('signin');
+    }
+
+    function resetPrototype() {
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      // hard reload to a clean slate
+      location.reload();
+    }
+
+    // ============ SETTINGS ============
+    function openSettings() {
+      refreshAccountUI();
+      refreshSettingsUI();
+      document.getElementById('settingsScreen').classList.add('open');
+    }
+    function closeSettings() {
+      document.getElementById('settingsScreen').classList.remove('open');
+    }
+
+    function refreshAccountUI() {
+      const acc = state.account;
+      document.getElementById('settingsAccountName').textContent = acc.name || 'Guest';
+      document.getElementById('settingsAccountEmail').textContent = acc.email || '—';
+      document.getElementById('settingsAvatar').textContent = acc.initials || 'JG';
+      // LinkedIn block
+      const titleEl = document.getElementById('linkedinTitle');
+      const subEl = document.getElementById('linkedinSubtitle');
+      const connectedView = document.getElementById('linkedinConnectedView');
+      const notConnectedView = document.getElementById('linkedinNotConnectedView');
+      if (acc.linkedInConnected) {
+        titleEl.textContent = 'Connected';
+        subEl.textContent = `${acc.linkedInURL} · ${acc.connectionCount} connections`;
+        connectedView.style.display = 'block';
+        notConnectedView.style.display = 'none';
+      } else {
+        titleEl.textContent = 'Not connected';
+        subEl.textContent = 'Connect to import your network';
+        connectedView.style.display = 'none';
+        notConnectedView.style.display = 'block';
+      }
+    }
+
+    function refreshSettingsUI() {
+      const s = state.settings;
+      // Theme
+      document.querySelectorAll('#themeSegmented button').forEach(b => {
+        b.classList.toggle('active', b.dataset.theme === s.theme);
+      });
+      // Audience
+      document.querySelectorAll('#audienceSegmented button').forEach(b => {
+        b.classList.toggle('active', b.dataset.aud === s.audience);
+      });
+      // Default hours
+      document.getElementById('defaultHoursValue').textContent = s.defaultShareHours;
+      // Toggles
+      document.getElementById('toggleAutoShare').classList.toggle('on', !!s.autoShareKnownEvents);
+      document.getElementById('toggleNotifNewSharer').classList.toggle('on', !!s.notifNewSharer);
+      document.getElementById('toggleNotifMessage').classList.toggle('on', !!s.notifNewMessage);
+      document.getElementById('toggleNotifExpiring').classList.toggle('on', !!s.notifExpiring);
+    }
+
+    function toggleSetting(key, el) {
+      state.settings[key] = !state.settings[key];
+      el.classList.toggle('on', state.settings[key]);
+      saveState();
+    }
+
+    function adjustDefaultHours(delta) {
+      const next = Math.max(1, Math.min(12, state.settings.defaultShareHours + delta));
+      state.settings.defaultShareHours = next;
+      document.getElementById('defaultHoursValue').textContent = next;
+      // also sync the live hour-dial default
+      setHours(next);
+      saveState();
+    }
+
+    // ============ LINKEDIN ============
+    function connectLinkedIn() {
+      const url = document.getElementById('linkedinInput').value.trim();
+      if (!url) { showToast('Enter your LinkedIn URL'); return; }
+      const btn = document.getElementById('linkedinConnectBtn');
+      btn.disabled = true;
+      const loadingEl = document.getElementById('linkedinLoading');
+      const loadingText = document.getElementById('linkedinLoadingText');
+      loadingEl.style.display = 'flex';
+      const steps = [
+        { text: 'Authenticating…', delay: 800 },
+        { text: 'Fetching your network…', delay: 1100 },
+        { text: 'Importing connections…', delay: 900 }
+      ];
+      let i = 0;
+      const step = () => {
+        if (i >= steps.length) {
+          loadingEl.style.display = 'none';
+          btn.disabled = false;
+          const count = 280 + Math.floor(Math.random() * 200);
+          state.account.linkedInConnected = true;
+          state.account.linkedInURL = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+          state.account.connectionCount = count;
+          saveState();
+          refreshAccountUI();
+          showToast(`Connected · ${count} connections imported`);
+          return;
+        }
+        loadingText.textContent = steps[i].text;
+        setTimeout(() => { i++; step(); }, steps[i].delay);
+      };
+      step();
+    }
+    function refreshLinkedIn() {
+      const loadingEl = document.getElementById('linkedinLoading');
+      const loadingText = document.getElementById('linkedinLoadingText');
+      loadingEl.style.display = 'flex';
+      loadingText.textContent = 'Refreshing connections…';
+      setTimeout(() => {
+        loadingEl.style.display = 'none';
+        const delta = Math.floor(Math.random() * 8);
+        state.account.connectionCount += delta;
+        saveState();
+        refreshAccountUI();
+        showToast(delta ? `+${delta} new connections` : 'You’re up to date');
+      }, 1400);
+    }
+    function disconnectLinkedIn() {
+      state.account.linkedInConnected = false;
+      state.account.linkedInURL = '';
+      state.account.connectionCount = 0;
+      saveState();
+      refreshAccountUI();
+      showToast('LinkedIn disconnected');
+    }
+
+    // ============ EVENT BINDINGS ============
+    document.addEventListener('DOMContentLoaded', () => {
+      // Auth mode tabs
+      document.querySelectorAll('#authModeTabs button').forEach(b => {
+        b.addEventListener('click', () => setAuthMode(b.dataset.mode));
+      });
+      // Theme segmented
+      document.querySelectorAll('#themeSegmented button').forEach(b => {
+        b.addEventListener('click', () => setTheme(b.dataset.theme));
+      });
+      // Audience segmented
+      document.querySelectorAll('#audienceSegmented button').forEach(b => {
+        b.addEventListener('click', () => {
+          state.settings.audience = b.dataset.aud;
+          document.querySelectorAll('#audienceSegmented button').forEach(x => {
+            x.classList.toggle('active', x === b);
+          });
+          saveState();
+        });
+      });
+    });
+
+    // ============ INIT ============
+    loadState();
+    applyTheme(state.settings.theme);
+    setHours(state.settings.defaultShareHours);
+    initHourDial();
+    renderSharing();
+    renderMessagesList();
+    refreshAccountUI();
+    refreshSettingsUI();
+
+    // Show login or app
+    if (!state.account.loggedIn) {
+      document.getElementById('loginScreen').hidden = false;
+      setAuthMode('signin');
+    } else {
+      document.getElementById('loginScreen').hidden = true;
+    }
+  </script>
+</body>
+</html>

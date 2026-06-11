@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+    TEMPLATE — the real Info.plist is gitignored because it carries filled-in
+    keys. To set up a fresh clone:
+      1. Copy this file to Info.plist (same directory).
+      2. Replace every ####### placeholder (see MAC-CHECKLIST.md step 8).
+    Never commit the filled-in Info.plist.
+-->
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Linkup</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>Google OAuth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>####### ENTER REVERSED GOOGLE CLIENT ID HERE (com.googleusercontent.apps.NNNN-xxxxxx) #######</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>LinkedIn OAuth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>linkup</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>GOOGLE_OAUTH_CLIENT_ID</key>
+	<string>####### ENTER GOOGLE iOS OAUTH CLIENT ID HERE #######</string>
+	<key>GOOGLE_OAUTH_REDIRECT_SCHEME</key>
+	<string>####### ENTER REVERSED GOOGLE CLIENT ID HERE (com.googleusercontent.apps.NNNN-xxxxxx) #######</string>
+	<key>LINKEDIN_CLIENT_ID</key>
+	<string>####### ENTER LINKEDIN CLIENT ID HERE #######</string>
+	<key>LINKEDIN_OAUTH_CALLBACK_SCHEME</key>
+	<string>linkup</string>
+	<key>LINKEDIN_REDIRECT_URI</key>
+	<string>linkup://linkedin-oauth</string>
+	<!--
+	    LINKUP_API_BASE_URL is the Supabase Edge Function base URL, NOT the
+	    Postgres REST endpoint. The app appends paths like /presence/nearby,
+	    /linkedin/archive/sync, /linkedin/oauth/exchange, and /messages/*.
+	-->
+	<key>LINKUP_API_BASE_URL</key>
+	<string>https://ghkzdhdwnpppeivwyaej.supabase.co/functions/v1/linkedin-oauth</string>
+	<!--
+	    SUPABASE_ANON_KEY is the anon/publishable key (Settings -> API),
+	    NOT the service role key (which must NEVER appear in the iOS app).
+	-->
+	<key>SUPABASE_URL</key>
+	<string>https://ghkzdhdwnpppeivwyaej.supabase.co</string>
+	<key>SUPABASE_ANON_KEY</key>
+	<string>####### ENTER SUPABASE ANON KEY HERE (Settings → API → anon public) #######</string>
+	<key>LINKUP_PRIVACY_URL</key>
+	<string>https://linkup.app/privacy</string>
+	<key>LINKUP_TERMS_URL</key>
+	<string>https://linkup.app/terms</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Linkup uses your location only when you&apos;ve actively chosen to share - for the time window you choose - and only with your LinkedIn connections at the same event.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Linkup uses notifications to tell you when a connection arrives at your event, when you get a new message, and 15 minutes before your sharing session expires.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,60 @@
+# =====================================================================
+# Linkup .gitignore
+# Rule of thumb: anything with a real credential, a private key, or
+# personal LinkedIn data never enters git history. Templates with
+# ####### placeholders are committed instead (Info.plist.example).
+# =====================================================================
+
+# --- Secrets & credentials -------------------------------------------
+# Filled-in Info.plist carries SUPABASE_ANON_KEY + OAuth client ids.
+# Commit Info.plist.example (placeholders) instead.
+Linkup/Resources/Info.plist
+
+# Apple APNs auth keys and any other private key material
+AuthKey_*.p8
+*.p8
+*.pem
+*.key
+*.mobileprovision
+*.certSigningRequest
+
+# Env files (Supabase CLI local dev, deploy scripts, etc.)
+.env
+.env.*
+!.env.example
+
+# --- Personal LinkedIn data ------------------------------------------
+# Real data exports must never be committed (privacy). The synthetic
+# fixtures (backend/linkedin/sample-Connections.csv, testdata/) have
+# different filenames and stay tracked.
+Connections.csv
+Complete_LinkedInDataExport*/
+.test-data/
+
+# --- Supabase CLI -----------------------------------------------------
+# .temp holds project-ref + access tokens; functions/ is a deploy-time
+# copy of backend/ (source of truth stays in backend/).
+supabase/.temp/
+supabase/functions/
+
+# --- Xcode / build artifacts ------------------------------------------
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xcarchive
+.swiftpm/
+Package.resolved
+
+# --- OS junk -----------------------------------------------------------
+.DS_Store
+__MACOSX/
+Thumbs.db
+Desktop.ini
+
+# --- Stale archives of this same project (redundant copies) ------------
+Linkup.zip
+Linkup.xcodeproj.zip

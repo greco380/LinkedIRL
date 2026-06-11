@@ -1,0 +1,7 @@
+Notes:
+"This is a synthetic LinkedIn-format export for two-device testing. Phone 1 (signed in as 'Alice Tester') imports THIS file. It contains 'Bob Tester' so Phone 1 can see Phone 2 on the map."
+
+First Name,Last Name,URL,Email Address,Company,Position,Connected On
+Bob,Tester,https://www.linkedin.com/in/bob-tester,,Linkup QA,Test Engineer,01 Jun 2026
+Casey,Filler,https://www.linkedin.com/in/casey-filler,,Acme,Analyst,12 May 2026
+Dana,Filler,https://www.linkedin.com/in/dana-filler,,Globex,Designer,03 Apr 2026
